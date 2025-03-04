@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catat Keuangan</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #121212;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #fff;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .form-container input, .form-container select, .form-container textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+    }
+    .form-container button {
+      padding: 12px 20px;
+      background-color: #FF4081;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    .form-container button:hover {
+      background-color: #F50057;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table, th, td {
+      border: 1px solid #333;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+    td {
+      background-color: #222;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-around;
+    }
+    .actions button {
+      padding: 8px 15px;
+      font-size: 14px;
+      background-color: #FF4081;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .actions button:hover {
+      background-color: #F50057;
+    }
+    .actions button.edit {
+      background-color: #00C853;
+    }
+    .actions button.edit:hover {
+      background-color: #00B248;
+    }
+    .actions button.delete {
+      background-color: #FF3D00;
+    }
+    .actions button.delete:hover {
+      background-color: #F44336;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      width: 500px;
+      position: relative;
+    }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+    }
+    .modal-content button {
+      padding: 12px 20px;
+      background-color: #FF4081;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    .modal-content button:hover {
+      background-color: #F50057;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #FF3D00;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    /* Notification Styles */
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    .notification.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* Total Row Styles */
+    .total-row td {
+      font-weight: bold;
+      background-color: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Catatan Keuangan</h2>
+  <div class="form-container">
+    <h3>Input Pengeluaran/Pendapatan</h3>
+    <form id="financeForm">
+      <label for="category">Kategori</label>
+      <select id="category" required>
+        <option value="Pendapatan">Pendapatan</option>
+        <option value="Pengeluaran">Pengeluaran</option>
+      </select>
+      <label for="description">Deskripsi</label>
+      <textarea id="description" rows="4" required></textarea>
+      <label for="amount">Jumlah (Rp)</label>
+      <input type="number" id="amount" required>
+      <label for="date">Tanggal</label>
+      <input type="date" id="date" required>
+      <button type="submit">Kirim Data</button>
+    </form>
+  </div>
+
+  <h3>Sisa Saldo</h3>
+  <p id="saldo" style="font-size: 24px; padding: 10px; background-color: #222; color: white; border-radius: 5px; text-align: center;">Rp 0</p>
+
+  <h3>Riwayat Pendapatan</h3>
+  <button id="exportIncome" style="margin-bottom: 10px; padding: 10px 20px; background-color: #00C853; border-radius: 5px; color: white;">Export All Pendapatan</button>
+  <table id="incomeTable">
+    <thead>
+      <tr>
+        <th>Deskripsi</th>
+        <th>Jumlah (Rp)</th>
+        <th>Tanggal</th>
+        <th>Waktu</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="4">Total Pendapatan</td>
+        <td id="totalIncome">Rp 0</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <h3>Riwayat Pengeluaran</h3>
+  <button id="exportExpense" style="margin-bottom: 10px; padding: 10px 20px; background-color: #FF3D00; border-radius: 5px; color: white;">Export All Pengeluaran</button>
+  <table id="expenseTable">
+    <thead>
+      <tr>
+        <th>Deskripsi</th>
+        <th>Jumlah (Rp)</th>
+        <th>Tanggal</th>
+        <th>Waktu</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="4">Total Pengeluaran</td>
+        <td id="totalExpense">Rp 0</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Modal for editing data -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">X</button>
+    <h3>Edit Pengeluaran/Pendapatan</h3>
+    <form id="editForm">
+      <label for="editCategory">Kategori</label>
+      <select id="editCategory" required>
+        <option value="Pendapatan">Pendapatan</option>
+        <option value="Pengeluaran">Pengeluaran</option>
+      </select>
+      <label for="editDescription">Deskripsi</label>
+      <textarea id="editDescription" rows="4" required></textarea>
+      <label for="editAmount">Jumlah (Rp)</label>
+      <input type="number" id="editAmount" required>
+      <label for="editDate">Tanggal</label>
+      <input type="date" id="editDate" required>
+      <button type="submit">Update Data</button>
+    </form>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="successNotification" class="notification">
+  Data berhasil disimpan!
+</div>
+
+<script>
+  let dataHistory = JSON.parse(localStorage.getItem('financeData')) || [];
+  let editIndex = null;
+
+  function formatCurrency(amount) {
+    return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Untuk tampilan halaman
+  }
+
+  function calculateTotal() {
+    let totalIncome = 0;
+    let totalExpense = 0;
+    dataHistory.forEach(entry => {
+      if (entry.category === 'Pendapatan') {
+        totalIncome += parseFloat(entry.amount);
+      } else {
+        totalExpense += parseFloat(entry.amount);
+      }
+    });
+    document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+    document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+
+    // Calculate and display saldo
+    const saldo = totalIncome - totalExpense;
+    const saldoElement = document.getElementById('saldo');
+    saldoElement.textContent = formatCurrency(saldo);
+
+    // Change color based on saldo value
+    if (saldo < 0) {
+      saldoElement.style.color = 'red';
+      saldoElement.style.backgroundColor = '#333';
+    } else {
+      saldoElement.style.color = 'green';
+      saldoElement.style.backgroundColor = '#222';
+    }
+  }
+
+  function displayHistory() {
+    const incomeTableBody = document.querySelector('#incomeTable tbody');
+    const expenseTableBody = document.querySelector('#expenseTable tbody');
+    incomeTableBody.innerHTML = '';
+    expenseTableBody.innerHTML = '';
+    dataHistory.forEach((entry, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${entry.description}</td>
+        <td>${formatCurrency(entry.amount)}</td>
+        <td>${entry.date}</td>
+        <td>${entry.time}</td>
+        <td class="actions">
+          <button class="edit" onclick="openEditModal(${index})">Edit</button>
+          <button class="delete" onclick="deleteData(${index})">Hapus</button>
+        </td>
+      `;
+      if (entry.category === 'Pendapatan') {
+        incomeTableBody.appendChild(row);
+      } else {
+        expenseTableBody.appendChild(row);
+      }
+    });
+    calculateTotal();
+  }
+
+  function openEditModal(index) {
+    const entry = dataHistory[index];
+    editIndex = index;
+    document.getElementById('editCategory').value = entry.category;
+    document.getElementById('editDescription').value = entry.description;
+    document.getElementById('editAmount').value = entry.amount;
+    document.getElementById('editDate').value = entry.date;
+    document.getElementById('editModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+  }
+
+  function deleteData(index) {
+    if (confirm('Yakin ingin menghapus data ini?')) {
+      dataHistory.splice(index, 1);
+      localStorage.setItem('financeData', JSON.stringify(dataHistory));
+      displayHistory();
+    }
+  }
+
+  function saveData(event) {
+    event.preventDefault();
+    const category = document.getElementById('category').value;
+    const description = document.getElementById('description').value;
+    const amount = document.getElementById('amount').value;
+    const date = document.getElementById('date').value;
+    const time = new Date().toLocaleTimeString();
+
+    const entry = { category, description, amount, date, time };
+    dataHistory.push(entry);
+    localStorage.setItem('financeData', JSON.stringify(dataHistory));
+    displayHistory();
+    document.getElementById('financeForm').reset();
+    document.getElementById('successNotification').classList.add('show');
+    setTimeout(() => document.getElementById('successNotification').classList.remove('show'), 3000);
+  }
+
+  function updateData(event) {
+    event.preventDefault();
+    const category = document.getElementById('editCategory').value;
+    const description = document.getElementById('editDescription').value;
+    const amount = document.getElementById('editAmount').value;
+    const date = document.getElementById('editDate').value;
+    const time = new Date().toLocaleTimeString();
+
+    dataHistory[editIndex] = { category, description, amount, date, time };
+    localStorage.setItem('financeData', JSON.stringify(dataHistory));
+    displayHistory();
+    closeModal();
+  }
+
+  document.getElementById('financeForm').addEventListener('submit', saveData);
+  document.getElementById('editForm').addEventListener('submit', updateData);
+  
+  displayHistory();
+</script>
+</body>
+</html>
